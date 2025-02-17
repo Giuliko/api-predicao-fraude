@@ -1,0 +1,1 @@
+web: uvicorn FastAPI_Process:app --host 0.0.0.0 --port $PORT
