@@ -3,6 +3,7 @@ import pickle
 import pandas as pd
 from fastapi import FastAPI, UploadFile, File
 from utils.NewDataProcess import new_data_process
+from fastapi.responses import FileResponse
 
 # Criar a instância da API
 app = FastAPI()
@@ -57,3 +58,15 @@ def upload_file(file: UploadFile = File(...)):
     
     except Exception as e:
         return {"erro": str(e)}
+
+@app.get("/download/")
+def download_result():
+    """
+    Endpoint para baixar o arquivo CSV gerado.
+    """
+    output_path = os.path.join(output_dir, "resultados_predicao.csv")
+
+    if not os.path.exists(output_path):
+        return {"erro": "Arquivo não encontrado. Execute a predição primeiro."}
+
+    return FileResponse(output_path, filename="resultados_predicao.csv", media_type="text/csv")
