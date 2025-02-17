@@ -7,6 +7,10 @@ from utils.NewDataProcess import new_data_process
 # Criar a instância da API
 app = FastAPI()
 
+@app.get("/")
+def home():
+    return {"mensagem": "API de Predição de Fraude está rodando! Acesse /docs para testar."}
+
 # Definir caminhos relativos
 base_dir = os.path.dirname(os.path.abspath(__file__))
 model_dir = os.path.join(base_dir, "model")
