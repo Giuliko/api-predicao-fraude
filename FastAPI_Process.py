@@ -4,6 +4,17 @@ import pandas as pd
 from fastapi import FastAPI, UploadFile, File
 from utils.NewDataProcess import new_data_process
 from fastapi.responses import FileResponse
+from fastapi import Security, HTTPException, Depends
+from fastapi.security import APIKeyHeader
+
+# Definir a chave de API esperada (poderíamos armazenar em uma variável de ambiente no Railway)
+API_KEY = "meu_segredo_super_secreto"  # 🔒 Substitua por uma chave segura
+api_key_header = APIKeyHeader(name="X-API-KEY")
+
+# Função para verificar se a chave é válida
+def verificar_api_key(api_key: str = Security(api_key_header)):
+    if api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Acesso negado. API Key inválida.")
 
 # Criar a instância da API
 app = FastAPI()
@@ -26,7 +37,7 @@ with open(modelo_path, 'rb') as arquivo:
     modelo = pickle.load(arquivo)
 
 @app.post("/upload/")
-def upload_file(file: UploadFile = File(...)):
+def upload_file(file: UploadFile = File(...), api_key: str = Security(verificar_api_key)):
     """
     Endpoint para upload de arquivo CSV e geração de previsões.
     """
@@ -70,3 +81,4 @@ def download_result():
         return {"erro": "Arquivo não encontrado. Execute a predição primeiro."}
 
     return FileResponse(output_path, filename="resultados_predicao.csv", media_type="text/csv")
+
