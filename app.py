@@ -5,7 +5,9 @@ import time
 import io
 
 # Definir a URL da API
-API_URL = "https://web-production-3f30f.up.railway.app"
+API_URL = "https://api-predicao-fraude-production.up.railway.app"
+#API_URL = "http://127.0.0.1:8000"
+
 
 # Configuração inicial da página
 st.set_page_config(page_title="Predição de Fraude", layout="wide")
@@ -69,7 +71,7 @@ if aba_selecionada == "🔼 Upload de Arquivo":
     if "arquivo_processado" in st.session_state:
         if st.button("📊 Ver Resultados"):
             st.session_state["aba_atual"] = "📊 Resultados"
-            st.rerun()  # 🔄 Atualiza a UI para refletir a mudança imediatamente
+            st.rerun()
 
 # 🌟 ABA 2: RESULTADOS
 if aba_selecionada == "📊 Resultados":
@@ -86,6 +88,39 @@ if aba_selecionada == "📊 Resultados":
                 df = pd.read_csv(io.StringIO(response.text))
 
                 st.success("✅ Resultados carregados com sucesso!")
+
+                # 🏆 Cálculo de KPIs
+                total_clientes = len(df)
+                total_fraudes = df["Predicao_Fraude"].sum()
+                percentual_fraude = (total_fraudes / total_clientes) * 100 if total_clientes > 0 else 0
+
+                # 🔹 Calcular "Valor Total em Risco"
+                valor_total_risco = df[df["Predicao_Fraude"] == 1]["Valor_Renda"].sum() if "Valor_Renda" in df.columns else "N/A"
+
+                # 🔹 Calcular "Média de Dias de Atraso (Fraudadores)"
+                media_atraso_fraudadores = df[df["Predicao_Fraude"] == 1]["QT_Dias_Atraso"].mean() if "QT_Dias_Atraso" in df.columns else "N/A"
+
+                # 🔹 Encontrar "Faixa Salarial Mais Comum (Fraudadores)"
+                faixa_salarial_mais_comum = (
+                    df[df["Predicao_Fraude"] == 1]["Valor_Renda"].mode()[0]
+                    if "Valor_Renda" in df.columns and not df[df["Predicao_Fraude"] == 1]["Valor_Renda"].empty
+                    else "N/A"
+                )
+
+                # Exibir os KPIs
+                st.markdown("### 📊 Métricas Principais")
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Total de Clientes Analisados", total_clientes)
+                col2.metric("Total de Fraudes Detectadas", total_fraudes)
+                col3.metric("Percentual de Fraude", f"{percentual_fraude:.2f}%")
+
+                col4, col5, col6 = st.columns(3)
+                col4.metric("Valor Total em Risco", f"R$ {valor_total_risco / 1_000_000:.2f} Mi" if valor_total_risco != "N/A" else "N/A")
+                col5.metric("Média de Dias de Atraso (Fraudadores)", f"{media_atraso_fraudadores:.1f}" if media_atraso_fraudadores != "N/A" else "N/A")
+                col6.metric("Faixa Salarial Mais Comum (Fraudadores)", f"R$ {faixa_salarial_mais_comum / 1_000:.2f}K" if faixa_salarial_mais_comum != "N/A" else "N/A")
+
+                # Exibir DataFrame dos resultados
+                st.markdown("### 📋 Detalhes dos Clientes Preditos")
                 st.dataframe(df)
 
                 # Botão de download
