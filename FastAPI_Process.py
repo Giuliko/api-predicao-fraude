@@ -60,6 +60,12 @@ def upload_file(file: UploadFile = File(...), api_key: str = Security(verificar_
         # Criar DataFrame com os resultados
         df_resultado = df_contrato.copy()
         df_resultado["Predicao_Fraude"] = predicoes
+
+        # Adicionar informações que podem ser úteis para calcular KPIs no Streamlit
+        colunas_extra = ["Valor_Renda", "QT_Dias_Atraso", "Total_Pago"]
+        for coluna in colunas_extra:
+            if coluna in df_novos_dados.columns:
+                df_resultado[coluna] = df_novos_dados[coluna]
         
         # Salvar arquivo com previsões
         output_path = os.path.join(output_dir, "resultados_predicao.csv")
