@@ -8,7 +8,6 @@ import io
 API_URL = "https://api-predicao-fraude-production.up.railway.app"
 #API_URL = "http://127.0.0.1:8000"
 
-
 # Configuração inicial da página
 st.set_page_config(page_title="Predição de Fraude", layout="wide")
 
