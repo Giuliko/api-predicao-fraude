@@ -11,15 +11,6 @@ API_URL = "https://api-predicao-fraude-production.up.railway.app"
 # Configuração inicial da página
 st.set_page_config(page_title="Predição de Fraude", layout="wide")
 
-st.markdown(
-    """
-    <h1 style="color: #2d3357;">
-        Nuvemshop
-    </h1>
-    """,
-    unsafe_allow_html=True
-)
-
 # Criar estado inicial da aba ativa
 if "aba_atual" not in st.session_state:
     st.session_state["aba_atual"] = "Upload"

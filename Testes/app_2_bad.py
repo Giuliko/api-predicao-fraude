@@ -5,20 +5,60 @@ import time
 import io
 
 # Definir a URL da API
-API_URL = "https://api-predicao-fraude-production.up.railway.app"
-#API_URL = "http://127.0.0.1:8000"
+#API_URL = "https://api-predicao-fraude-production.up.railway.app"
+API_URL = "http://127.0.0.1:8000"
 
 # Configuração inicial da página
 st.set_page_config(page_title="Predição de Fraude", layout="wide")
 
+# Custom CSS para replicar a UI da Nuvemshop
 st.markdown(
     """
-    <h1 style="color: #2d3357;">
-        Nuvemshop
-    </h1>
+    <style>
+        /* Fundo azul e fonte branca */
+        .stApp {
+            background-color: #0050C8;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Caixa de entrada e botões estilizados */
+        input, .stTextInput, .stTextArea, .stFileUploader {
+            background-color: white !important;
+            color: black !important;
+            border-radius: 12px !important;
+        }
+        
+        .stButton > button {
+            background-color: white !important;
+            color: #0050C8 !important;
+            border-radius: 20px !important;
+            font-weight: bold !important;
+            padding: 10px 20px !important;
+            border: none !important;
+        }
+        
+        .stButton > button:hover {
+            background-color: #f0f0f0 !important;
+        }
+
+        /* Estilizando os títulos e textos */
+        h1, h2, h3, h4, h5, h6, .stRadio label, .stAlert, .stMarkdown, .stTextInput label, .stFileUploader label {
+            color: white !important;
+        }
+
+        /* Bordas arredondadas nos cards */
+        .stDataFrame, .stMetric {
+            border-radius: 12px !important;
+            padding: 10px !important;
+        }
+    </style>
     """,
     unsafe_allow_html=True
 )
+
+# Criar título no estilo Nuvemshop
+st.markdown("""<h1 style='text-align: left; font-weight: bold;'>Nuvemshop</h1>""", unsafe_allow_html=True)
 
 # Criar estado inicial da aba ativa
 if "aba_atual" not in st.session_state:
@@ -29,8 +69,10 @@ if "api_key" not in st.session_state:
     st.session_state["api_key"] = ""
 
 # Criar menu de navegação
-aba_selecionada = st.radio("Navegação", ["🔼 Upload de Arquivo", "📊 Resultados"], 
-                           index=0 if st.session_state["aba_atual"] == "Upload" else 1)
+aba_selecionada = st.radio("<span style='color: white;'>Navegação</span>", ["🔼 Upload de Arquivo", "📊 Resultados"], 
+                           index=0 if st.session_state["aba_atual"] == "Upload" else 1, 
+                           format_func=lambda x: f"<span style='color: white;'>{x}</span>", 
+                           key="nav_radio")
 
 # 🌟 ABA 1: UPLOAD DO CSV
 if aba_selecionada == "🔼 Upload de Arquivo":
