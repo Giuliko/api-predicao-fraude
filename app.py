@@ -20,6 +20,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 # Criar estado inicial da aba ativa
 if "aba_atual" not in st.session_state:
     st.session_state["aba_atual"] = "Upload"
